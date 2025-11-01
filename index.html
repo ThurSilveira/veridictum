@@ -1,11 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="css/main.css">
+    <title>Veridictum</title>
+    <script src="js/main.js" defer></script>
 </head>
 <body>
-    
+    <div class="app">
+        <div class="container" id="chat-app">
+            <aside class="sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="images/avatar.png" alt="Veridictum">
+                    </div>
+                    <div>
+                        <div class="title">Veridictum</div>
+                        <div class="subtitle">Seu tradutor de proposição</div>
+                    </div>
+                </div>
+                
+                <div class="chat-options">
+                    <button class="chat-option active" data-type="nl-to-cpc">
+                        NL → CPC
+                    </button>
+                    <button class="chat-option" data-type="cpc-to-nl">
+                        CPC → NL
+                    </button>
+                </div>
+                
+                <div class="conversations-container">
+                    <h3 class="conversations-title">Operadores Lógicos</h3>
+                    <div class="logic-symbols">
+                        <div class="symbol-item">
+                            <span class="symbol">∧</span>
+                            <span class="meaning">E (conjunção)</span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">∨</span>
+                            <span class="meaning">OU (disjunção)</span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">¬</span>
+                            <span class="meaning">NÃO (negação)</span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">→</span>
+                            <span class="meaning">SE...ENTÃO (implicação)</span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">↔</span>
+                            <span class="meaning">SE E SOMENTE SE (bi-implicação)</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="main">
+                <div class="header">
+                    <span id="chat-title">Tradução: Linguagem Natural → CPC</span>
+                </div>
+                
+                <div class="messages" id="messages">
+
+                </div>
+
+                <div class="composer">
+                    <div class="input-container">
+                        <textarea id="userInput" placeholder="Digite uma proposição em linguagem natural..."></textarea>
+                    </div>
+                    <button class="send" id="sendBtn"> <!--Botao de enviar msg-->
+                        <span class="send-icon">➤</span>
+                    </button>
+                </div>
+
+                <div class="footer-note">
+                    <span class="info-icon">💡</span>
+                    Você sabia? “Veredictum” em latim significa “palavra da verdade” — perfeito para lógica proposicional!
+                </div>
+            </main>
+        </div>
+    </div>
 </body>
 </html>
