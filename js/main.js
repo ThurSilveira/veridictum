@@ -170,3 +170,92 @@ async function handleTranslation() {
         resetButton();
     }
 }
+function createNlToCpcPrompt(content) {
+    // ... (função inalterada)
+    return `
+        Você é um tradutor de linguagem natural para a Linguagem do Cálculo Proposicional Clássico (CPC).
+        
+        **Sua tarefa é:**
+        1. Identificar as proposições simples na frase em português.
+        2. Atribuir uma letra maiúscula (P, Q, R...) a cada proposição, criando um dicionário de tradução.
+        3. Traduzir a frase para a fórmula lógica, utilizando apenas os símbolos:
+           - **e**: ^
+           - **ou**: v
+           - **não**: ~
+           - **implica/se...então**: ->
+           - **se e somente se**: <->
+        4. **O formato de saída deve ser estritamente:**
+           DICIONARIO: [Lista das proposições e suas letras, separadas por ponto e vírgula]
+           FORMULA: [A fórmula lógica traduzida]
+        
+        **Frase para tradução:** "${content}"
+    `;
+}
+
+function createCpcToNlPrompt(content) {
+    // ... (função inalterada)
+    // Assume que a última linha é a fórmula e as anteriores são as proposições
+    const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    if (lines.length < 2) {
+        throw new Error('Formato de entrada inválido. Esperado: Proposições e a Fórmula Lógica.');
+    }
+
+    const formula = lines.pop().replace(/&/g, '^').replace(/\|/g, 'v').replace(/!/g, '~');
+    const prepositions = lines.join('; ');
+
+    if (!prepositions || !formula) {
+        throw new Error('As preposições ou a fórmula lógica estão vazias.');
+    }
+
+    return `
+        Você é um tradutor da Linguagem do Cálculo Proposicional Clássico (CPC) para o português.
+        
+        **Sua tarefa é:**
+        1. Analisar as Preposições e a Fórmula Lógica fornecidas.
+        2. Traduzir a fórmula lógica para uma sentença em português que seja gramaticalmente **coerente** e **natural**.
+        3. A tradução deve refletir com precisão a estrutura lógica (negação, conjunção, disjunção, implicação, bi-implicação) usando as preposições fornecidas.
+        4. **Os símbolos a serem traduzidos são:**
+           - **^**: "e" (conjunção)
+           - **v**: "ou" (disjunção)
+           - **~**: "não" (negação, usar 'não é verdade que', 'não' antes do verbo, etc., de forma coerente)
+           - **->**: "se...então..." (implicação)
+           - **<->**: "se e somente se" (bi-implicação)
+        5. A frase traduzida deve ser a única saída, sem preâmbulos ou explicações.
+        
+        **Preposições:** ${prepositions}
+
+        **Fórmula Lógica:** ${formula}
+    `;
+}
+
+async function callGeminiAPI(prompt) {
+    const response = await fetch(`${API_ENDPOINT}?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+                temperature: 0.1,
+            },
+        }),
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.json();
+        if (response.status === 400 && errorBody.error?.message.includes('API key not valid')) {
+            throw new Error("Chave API inválida ou não configurada. Verifique se 'GEMINI_API_KEY' é uma chave válida.");
+        }
+        throw new Error(`Falha na API (${response.status}): ${errorBody.error?.message || 'Erro desconhecido.'}`);
+    }
+
+    const json = await response.json();
+
+    const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!text) {
+        throw new Error("A resposta da API está vazia ou incompleta.");
+    }
+    return text;
+}
