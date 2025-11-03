@@ -140,3 +140,33 @@ function resetButton() {
     sendButton.disabled = false;
     sendButton.innerHTML = '<span class="send-icon">➤</span>';
 }
+
+async function handleTranslation() {
+    const content = userInput.value.trim();
+    if (!content) {
+        alert('Por favor, digite o conteúdo para a tradução.');
+        return;
+    }
+
+    addMessage(content, 'user', 'Você');
+    userInput.value = '';
+    showLoading();
+
+    let prompt = '';
+
+    if (currentMode === 'nl-to-cpc') {
+        prompt = createNlToCpcPrompt(content);
+    } else {
+        prompt = createCpcToNlPrompt(content);
+    }
+
+    try {
+        const response = await callGeminiAPI(prompt);
+        addMessage(response, 'bot', 'Veridictum');
+    } catch (error) {
+        console.error('Erro ao chamar a API:', error);
+        addMessage(`Erro na tradução: ${error.message}. Verifique a sua chave API, os símbolos, ou o console.`, 'bot', 'Veridictum');
+    } finally {
+        resetButton();
+    }
+}
