@@ -1,4 +1,4 @@
-const GEMINI_API_KEY = "API_KEY";
+const GEMINI_API_KEY = "AIzaSyBGl0GRLt8sCOQj2gU3G0ZxGqelzAaLrGw";
 const API_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 const chatOptions = document.querySelectorAll('.chat-option');
