@@ -12,7 +12,7 @@ O objetivo é auxiliar estudantes no aprendizado de **Lógica Proposicional**, c
 ---
 
 ## Arquitetura do Sistema
-
+```mermaid
 graph TD
     A[Usuario na Interface Web] --> B[Frontend HTML/CSS/JS]
     B --> C[Backend JS: Modulos de Traducao]
@@ -20,6 +20,7 @@ graph TD
     D --> C
     C --> B
     B --> E[Exibicao da Traducao NL CPC]
+```
 
 
 
