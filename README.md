@@ -21,6 +21,7 @@ C --> D[API Gemini (LLM)]
 D --> C
 C --> B
 B --> E[Exibição da Tradução NL ↔ CPC]
+```
 
 
 ### Componentes
