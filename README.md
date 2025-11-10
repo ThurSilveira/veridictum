@@ -129,10 +129,10 @@ Os testes verificam:
 ## Equipe
 
 | Integrante |
-|-------------|--------|
-| Arthur Silveira
+|-------------|
+| Arthur Silveira |
 | Guilherme Araki Alves |
-| Jeffer Henrique Pavan Cantarelo | 
+| Jeffer Henrique Pavan Cantarelo |
 
 ---
 
