@@ -1,4 +1,4 @@
-const API_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+const API_ENDPOINT = "https://veridictum.onrender.com/api/gemini";
 
 const chatOptions = document.querySelectorAll('.chat-option');
 const messagesContainer = document.getElementById('messages');
@@ -226,12 +226,12 @@ function createCpcToNlPrompt(content) {
 }
 
 /**
- * NOVO MÉTODO: Chama um servidor backend local para intermediar a requisição à API Gemini.
  * @param {string} prompt 
  * @returns {Promise<string>}
  */
 async function callGeminiAPI(prompt) {
-    const response = await fetch("http://localhost:3000/api/gemini", {
+
+    const response = await fetch(API_ENDPOINT, { 
         method: "POST",
         headers: {
             "Content-Type": "application/json"
