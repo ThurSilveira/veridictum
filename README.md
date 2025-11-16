@@ -32,7 +32,7 @@ graph TD
 | **Backend (JavaScript)** | Gerencia a lógica de tradução, normalização de texto e requisições à API Gemini. |
 | **API Gemini (LLM)** | Auxilia na interpretação de frases complexas, validando e refinando traduções. |
 | **Módulos internos** | Scripts de pré-processamento, mapeamento de conectivos e formatação de resultados. |
-| **Hospedagem** | GitHub Pages. |
+| **Hospedagem** | GitHub Pages e Render. |
 
 ---
 
@@ -143,6 +143,7 @@ Os testes verificam:
 - JavaScript (ES2025)  
 - Gemini API (LLM)  
 - GitHub Pages
+- Render (Hospedagem do Backend)
 
 ---
 ## Créditos
