@@ -58,10 +58,10 @@ function insertSymbolAtCursor(input, text) {
 function updateInterface() {
     if (currentMode === 'nl-to-cpc') {
         chatTitle.textContent = 'Tradução: Linguagem Natural → CPC';
-        userInput.placeholder = 'Digite uma proposição em linguagem natural... Ex: "Se chove, a rua fica molhada"';
+        userInput.placeholder = 'Digite uma proposição em linguagem natural...';
     } else {
         chatTitle.textContent = 'Tradução: CPC → Linguagem Natural';
-        userInput.placeholder = 'Digite a Fórmula e as Proposições, separadas por uma linha. Ex:\nP = Chove\nQ = Faz sol\n(P ^ Q)';
+        userInput.placeholder = 'Digite a fórmula e as proposições, como no exemplo...';
     }
 }
 
@@ -74,31 +74,27 @@ function updateWelcomeMessage() {
 
     if (currentMode === 'nl-to-cpc') {
         welcomeText = `
-            <strong>Modo: Linguagem Natural → CPC</strong><br><br>
-            
-            <strong>Como usar:</strong><br>
-            • Digite uma frase declarativa em português (uma proposição simples ou composta).<br>
-            • Receba o DICIONÁRIO e a FORMULA lógica em Cálculo Proposicional Clássico (CPC).<br><br>
-            
-            <strong>Exemplos:</strong><br>
-            • Entrada: "Se chover, então a rua fica molhada"<br>
+            <strong>Modo: Linguagem Natural → CPC</strong><br>
+            <strong>Como usar:</strong>
+            • Digite uma frase em português e receba o DICIONÁRIO e a FORMULA lógica (CPC).<br>
+            <strong>Exemplo:</strong>
+            • Entrada: "Se chover, então a rua fica molhada"
             • Saída: DICIONARIO: P = Chove, Q = a rua fica molhada; FORMULA: P → Q<br>
+            <strong style="color:#e74c3c;">AVISO:</strong> A primeira operação após 15 minutos de inatividade pode levar até 30s, pois o servidor (Render) precisa iniciar.
         `;
     } else {
         welcomeText = `
-            <strong>Modo: CPC → Linguagem Natural</strong><br><br>
-            
-            <strong>Como usar:</strong><br>
-            • Na caixa abaixo, informe as letras das proposições, uma por linha, e a fórmula lógica na última linha.<br>
-            • Símbolos permitidos: ∧, ∨, ¬, →, ↔ (ou alternativos: ^, |, !, ->, <->).<br><br>
-            
-            <strong>Exemplo de Entrada:</strong><br>
-            P = "Chove"<br>
-            Q = "Faz sol"<br>
-            P v Q<br> 
-            
-            <strong>Saída Esperada:</strong><br>
+            <strong>Modo: CPC → Linguagem Natural</strong><br>
+            <strong>Como usar:</strong>
+            • Informe as proposições (uma por linha) e a fórmula lógica na última linha.
+            • Símbolos permitidos: ∧, ∨, ¬, →, ↔ (ou alternativos: ^, v, ~, ->, <->).<br> 
+            <strong>Exemplo de Entrada:</strong>
+            P = "Chove"
+            Q = "Faz sol"
+            P v Q<br>
+            <strong>Saída Esperada:</strong>
             "Chove ou faz sol"<br>
+            <strong style="color:#e74c3c;">AVISO:</strong> A primeira operação após 15 minutos de inatividade pode levar até 30s, pois o servidor (Render) precisa iniciar.
         `;
     }
 
@@ -183,7 +179,7 @@ function createNlToCpcPrompt(content) {
            - **implica/se...então**: ->
            - **se e somente se**: <->
         4. **O formato de saída deve ser estritamente:**
-           DICIONARIO: [Lista das proposições e suas letras, separadas por ponto e vírgula]
+           DICIONARIO: [Lista das proposições e suas letras, separadas por ponto e vírgula e uma quebra de linha]
            FORMULA: [A fórmula lógica traduzida]
         
         **Frase para tradução:** "${content}"
