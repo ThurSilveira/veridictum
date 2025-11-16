@@ -15,10 +15,12 @@ document.addEventListener('DOMContentLoaded', function () {
             chatOptions.forEach(opt => opt.classList.remove('active'));
             this.classList.add('active');
             currentMode = this.dataset.type;
+            
             updateInterface();
-            updateWelcomeMessage();
+            updateWelcomeMessage(); 
         });
     });
+    
     sendButton.addEventListener('click', handleTranslation);
     userInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -26,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
             handleTranslation();
         }
     });
+    
     logicSymbols.forEach(symbolItem => {
         symbolItem.addEventListener('click', function () {
             const symbol = this.querySelector('.symbol').textContent.trim();
@@ -38,11 +41,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-
-/**
- * @param {HTMLTextAreaElement} input 
- * @param {string} text 
- */
 function insertSymbolAtCursor(input, text) {
     const start = input.selectionStart;
     const end = input.selectionEnd;
@@ -66,10 +64,8 @@ function updateInterface() {
 }
 
 function updateWelcomeMessage() {
-    const welcomeMessage = messagesContainer.querySelector('.message.bot');
-    if (welcomeMessage) {
-        welcomeMessage.remove();
-    }
+    messagesContainer.innerHTML = '';
+    
     let welcomeText = '';
 
     if (currentMode === 'nl-to-cpc') {
@@ -221,10 +217,6 @@ function createCpcToNlPrompt(content) {
     `;
 }
 
-/**
- * @param {string} prompt 
- * @returns {Promise<string>}
- */
 async function callGeminiAPI(prompt) {
 
     const response = await fetch(API_ENDPOINT, { 
