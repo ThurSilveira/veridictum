@@ -101,7 +101,7 @@ function addMessage(text, sender, meta) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${sender}`;
 
-    const avatarImg = sender === 'bot' ? 'images/avatar.png' : 'images/user.png';
+    const avatarImg = sender === 'bot' ? 'images/avatar.png' : 'images/icon.png';
 
     messageDiv.innerHTML = `
         <div class="avatar">
