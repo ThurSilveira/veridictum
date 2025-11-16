@@ -1,4 +1,3 @@
-const GEMINI_API_KEY = "AIzaSyBGl0GRLt8sCOQj2gU3G0ZxGqelzAaLrGw";
 const API_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 const chatOptions = document.querySelectorAll('.chat-option');
@@ -171,7 +170,6 @@ async function handleTranslation() {
     }
 }
 function createNlToCpcPrompt(content) {
-    // ... (função inalterada)
     return `
         Você é um tradutor de linguagem natural para a Linguagem do Cálculo Proposicional Clássico (CPC).
         
@@ -193,8 +191,7 @@ function createNlToCpcPrompt(content) {
 }
 
 function createCpcToNlPrompt(content) {
-    // ... (função inalterada)
-    // Assume que a última linha é a fórmula e as anteriores são as proposições
+
     const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0);
     if (lines.length < 2) {
         throw new Error('Formato de entrada inválido. Esperado: Proposições e a Fórmula Lógica.');
@@ -228,34 +225,32 @@ function createCpcToNlPrompt(content) {
     `;
 }
 
+/**
+ * NOVO MÉTODO: Chama um servidor backend local para intermediar a requisição à API Gemini.
+ * @param {string} prompt 
+ * @returns {Promise<string>}
+ */
 async function callGeminiAPI(prompt) {
-    const response = await fetch(`${API_ENDPOINT}?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
+    const response = await fetch("http://localhost:3000/api/gemini", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-                temperature: 0.1,
-            },
-        }),
+        body: JSON.stringify({ prompt })
     });
 
     if (!response.ok) {
         const errorBody = await response.json();
-        if (response.status === 400 && errorBody.error?.message.includes('API key not valid')) {
-            throw new Error("Chave API inválida ou não configurada. Verifique se 'GEMINI_API_KEY' é uma chave válida.");
-        }
-        throw new Error(`Falha na API (${response.status}): ${errorBody.error?.message || 'Erro desconhecido.'}`);
+        throw new Error(errorBody.erro || "Erro ao chamar o servidor.");
     }
 
     const json = await response.json();
 
     const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
-
+    
     if (!text) {
-        throw new Error("A resposta da API está vazia ou incompleta.");
+        throw new Error("Resposta vazia da IA.");
     }
+
     return text;
 }
