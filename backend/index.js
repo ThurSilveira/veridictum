@@ -2,12 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
-
-// Configurações da API
 const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-const API_KEY = process.env.GEMINI_API_KEY; // Renomeado para GEMINI_API_KEY (mais específico)
+const API_KEY = process.env.GEMINI_API_KEY;
 
-// Verifica se a chave API está presente
 if (!API_KEY) {
     console.error("ERRO: A variável de ambiente GEMINI_API_KEY não está configurada.");
     process.exit(1);
@@ -16,11 +13,9 @@ if (!API_KEY) {
 const app = express();
 const PORT = 3000;
 
-// Configurações de Middleware
-app.use(cors()); // Permite requisições de outras origens (CORS)
-app.use(express.json()); // Permite parsear o corpo das requisições JSON
+app.use(cors());
+app.use(express.json());
 
-// Rota Proxy para a API Gemini
 app.post("/api/gemini", async (req, res) => {
     try {
         const { prompt } = req.body;
@@ -31,7 +26,6 @@ app.post("/api/gemini", async (req, res) => {
 
         const payload = {
             contents: [{ parts: [{ text: prompt }] }],
-            // Adicionado a configuração de geração para melhor controle da resposta
             generationConfig: {
                 temperature: 0.1, 
             },
@@ -44,18 +38,13 @@ app.post("/api/gemini", async (req, res) => {
                 headers: { "Content-Type": "application/json" }
             }
         );
-        
-        // Retorna a resposta completa da API Gemini para o frontend
         res.json(response.data);
 
     } catch (err) {
-        // Log detalhado do erro no servidor
         const errorMessage = err.response?.data?.error?.message || err.message || "Erro desconhecido";
         const status = err.response?.status || 500;
         
         console.error(`Falha ao chamar a API Gemini (Status ${status}): ${errorMessage}`);
-        
-        // Retorna uma mensagem de erro mais útil para o frontend
         res.status(status).json({ erro: `Erro ao chamar a API Gemini: ${errorMessage}` });
     }
 });
