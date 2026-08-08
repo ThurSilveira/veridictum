@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://veridictum.onrender.com; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+    <link rel="icon" type="image/png" href="images/avatar.png">
     <link rel="stylesheet" href="css/main.css">
     <title>Veridictum</title>
     <script src="js/script.js" defer></script> 
@@ -68,7 +71,7 @@
 
                 <div class="composer">
                     <div class="input-container">
-                        <textarea id="userInput" placeholder="Digite uma proposição em linguagem natural..."></textarea>
+                        <textarea id="userInput" maxlength="6000" placeholder="Digite uma proposição em linguagem natural..."></textarea>
                     </div>
                     <button class="send" id="sendBtn"> <span class="send-icon">➤</span>
                     </button>

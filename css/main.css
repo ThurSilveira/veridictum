@@ -274,6 +274,8 @@ body {
     font-size: 1.5rem;
     line-height: 1.6;
     color: var(--color-text-light);
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
 }
 
 .composer {

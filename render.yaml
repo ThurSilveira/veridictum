@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: veridictum
+    runtime: node
+    rootDir: backend
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGINS
+        value: https://thursilveira.github.io
+      - key: GEMINI_API_KEY
+        sync: false

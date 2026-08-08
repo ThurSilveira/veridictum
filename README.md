@@ -1,152 +1,82 @@
-#  Veridictum — Agente NL ↔ CPC
+# Veridictum — tradutor NL ↔ CPC
 
-> Tradutor inteligente entre **Linguagem Natural (NL)** e **Cálculo Proposicional Clássico (CPC)**.
+Aplicação web para traduzir sentenças em português para fórmulas do Cálculo Proposicional Clássico (CPC) e fazer a conversão inversa com o Gemini.
 
----
+- Frontend: [thursilveira.github.io/veridictum](https://thursilveira.github.io/veridictum/)
+- API: [veridictum.onrender.com](https://veridictum.onrender.com/)
+- Demonstração: [YouTube](https://youtu.be/bG_rJpK4Vvo)
 
-## Descrição Geral
+## Arquitetura
 
-**Veridictum.AI** é um agente web que traduz automaticamente frases em português para expressões lógicas proposicionais — e vice-versa.  
-O objetivo é auxiliar estudantes no aprendizado de **Lógica Proposicional**, combinando **regras determinísticas** com **modelos de linguagem (LLMs)** via **API Gemini**.
-
----
-
-## Arquitetura do Sistema
 ```mermaid
-graph TD
-    A[Usuario na Interface Web] --> B[Frontend HTML/CSS/JS]
-    B --> C[Backend JS: Modulos de Traducao]
-    C --> D[API Gemini LLM]
-    D --> C
-    C --> B
-    B --> E[Exibicao da Traducao NL CPC]
+flowchart LR
+    U[Usuário] --> F[HTML, CSS e JavaScript\nGitHub Pages]
+    F -->|POST /api/gemini| B[Express\nRender]
+    B -->|API protegida no servidor| G[Gemini 2.5 Flash]
+    G --> B --> F
 ```
 
+O frontend monta instruções específicas para cada modo e envia o prompt ao backend. O backend valida e limita as requisições antes de encaminhá-las ao Gemini. A chave da API existe apenas no ambiente do Render.
 
+## Funcionalidades
 
-### Componentes
+- Linguagem natural → CPC, com dicionário de proposições.
+- CPC → linguagem natural.
+- Operadores `∧`, `∨`, `¬`, `→` e `↔`, além de `^`, `v`, `~`, `->` e `<->`.
+- Interface responsiva e atalhos para inserir operadores.
+- Proteção contra injeção de HTML, política CSP e timeout no navegador.
+- CORS restrito, rate limit, limite de tamanho, headers de segurança e respostas de erro sanitizadas na API.
+- Health check em `GET /health`.
 
-| Camada | Descrição |
-|--------|------------|
-| **Frontend (Web)** | Interface responsiva em HTML, CSS e JS. Recebe frases ou fórmulas e exibe resultados. |
-| **Backend (JavaScript)** | Gerencia a lógica de tradução, normalização de texto e requisições à API Gemini. |
-| **API Gemini (LLM)** | Auxilia na interpretação de frases complexas, validando e refinando traduções. |
-| **Módulos internos** | Scripts de pré-processamento, mapeamento de conectivos e formatação de resultados. |
-| **Hospedagem** | GitHub Pages e Render. |
+## Execução local
 
----
+Requisitos: Node.js 20–26; Node.js 24 é a versão recomendada e usada no CI/deploy.
 
-##  Estratégia de Tradução
-
-###  NL → CPC
-
-1. **Pré-processamento:** normalização e remoção de pontuação.  
-2. **Análise sintática:** substituição de conectivos (`e`, `ou`, `não`, `se...então`) por símbolos (`∧`, `∨`, `¬`, `→`, `↔`).  
-3. **Extração de proposições:** identificação de orações simples e substituição por letras (`P`, `Q`, `R`).  
-4. **Formação da expressão lógica.**  
-5. **Validação via Gemini API:** em casos ambíguos, a resposta do LLM é comparada com a tradução gerada por regras.
-
-#### Exemplo de fluxo (JSON)
-
-```json
-{
-  "input": "Se chover, então a grama ficará molhada.",
-  "rules_output": "P → Q",
-  "gemini_suggestion": {
-    "formula": "P → Q",
-    "mapping": { "P": "chover", "Q": "a grama ficará molhada" }
-  },
-  "final_output": "P → Q"
-}
+```bash
+cd backend
+cp .env.example .env
+npm ci
+npm start
 ```
 
----
+Preencha `GEMINI_API_KEY` no `.env`. O arquivo é ignorado pelo Git e não deve ser versionado. Sirva o frontend a partir da raiz do repositório, por exemplo na porta `5500`, e acesse a URL fornecida pelo servidor estático.
 
-### CPC → NL
+Variáveis do backend:
 
-Processo inverso:
-1. Leitura da fórmula.  
-2. Substituição de conectivos por equivalentes linguísticos.  
-3. Recuperação do mapeamento original (P = ..., Q = ...).  
-4. Construção de frase natural coerente.
+| Variável | Obrigatória | Padrão |
+|---|---:|---|
+| `GEMINI_API_KEY` | Sim | — |
+| `PORT` | Não | `3000` |
+| `CORS_ORIGINS` | Não | GitHub Pages e desenvolvimento local; aceita uma lista separada por vírgulas |
 
-#### Exemplo
+## Verificações
 
+```bash
+cd backend
+npm run check
+npm audit --omit=dev
 ```
-Entrada: (P ∧ Q) → R  
-Saída: Se P e Q forem verdadeiros, então R ocorrerá.
-```
 
----
+A suíte cobre health check, headers, CORS, validação de prompts e respostas 404. O workflow de CI executa as verificações e a auditoria em pushes e pull requests. O Dependabot verifica semanalmente dependências npm e GitHub Actions.
 
-## Exemplos de Tradução
+## Deploy
 
-| Tipo | Entrada | Saída |
-|------|----------|-------|
-| NL → CPC | “Se chover, então a grama ficará molhada.” | `P → Q` |
-| NL → CPC | “Não está chovendo e a grama está seca.” | `¬P ∧ R` |
-| CPC → NL | `(P ∧ Q) → R` | “Se P e Q forem verdadeiros, então R ocorrerá.” |
+- O GitHub Pages publica o frontend a partir da branch `main`.
+- O `render.yaml` documenta o serviço do backend, o health check e as variáveis esperadas.
+- O Render deve manter `GEMINI_API_KEY` como segredo e iniciar o serviço dentro de `backend` com `npm start`.
 
----
-
-## Testes e Validação
-
-Os testes verificam:
-
-- Estrutura sintática da fórmula.  
-- Identificação e substituição corretas dos conectivos.  
-- Tradução coerente entre NL ↔ CPC.  
-- Manutenção da semântica nas conversões.  
-- Análise comparativa entre regras e saída do modelo Gemini.
-
----
+Em planos que suspendem serviços inativos, a primeira tradução após uma pausa pode levar mais tempo.
 
 ## Limitações
 
-- Ambiguidade em frases longas ou com múltiplas condicionais.  
-- Dependência parcial do modelo Gemini em casos complexos.  
-- Suporte incompleto para conectivos compostos (“nem”, “ou...ou...”).  
-- Tradução focada apenas em **Lógica Proposicional**.
-
----
-
-## Possíveis Melhorias
-
-- Implementar **ponderação entre regras e respostas do LLM**.  
-- Adicionar **histórico de traduções** e **modo visual** de edição.  
-- Expandir para **Lógica de Predicados**.  
-- Criar um **banco de testes automatizado (unitário)**.  
-- Integração com **speech-to-text** para entrada por voz.
-
----
-
-## Demonstração
-
-> ([link_do_video](https://youtu.be/bG_rJpK4Vvo))
-
----
+- A tradução usa um modelo de linguagem e pode conter imprecisões.
+- Frases ambíguas ou condicionais muito longas exigem revisão humana.
+- O escopo atual é lógica proposicional, não lógica de predicados.
 
 ## Equipe
 
-| Integrante |
-|-------------|
-| Arthur Silveira |
-| Guilherme Araki Alves |
-| Jeffer Henrique Pavan Cantarelo |
+- Arthur Silveira
+- Guilherme Araki Alves
+- Jeffer Henrique Pavan Cantarelo
 
----
-
-## Tecnologias Utilizadas
-
-- HTML5  
-- CSS3  
-- JavaScript (ES2025)  
-- Gemini API (LLM)  
-- GitHub Pages
-- Render (Hospedagem do Backend)
-
----
-## Créditos
-
-Projeto desenvolvido como parte da disciplina **Lógica para Computação** — **Uni-FACEF**.  
-Todos os direitos reservados © 2025.
+Projeto desenvolvido na disciplina Lógica para Computação da Uni-FACEF.
