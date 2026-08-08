@@ -61,7 +61,7 @@ A suíte cobre health check, headers, CORS, validação de prompts e respostas 4
 
 ## Deploy
 
-- O GitHub Pages publica o frontend a partir da branch `main`.
+- O workflow `Deploy GitHub Pages` publica apenas `index.html`, `css`, `images` e `js` após mudanças na branch `main`.
 - O `render.yaml` documenta o serviço do backend, o health check e as variáveis esperadas.
 - O Render deve manter `GEMINI_API_KEY` como segredo e iniciar o serviço dentro de `backend` com `npm start`.
 
